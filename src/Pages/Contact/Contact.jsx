@@ -72,9 +72,9 @@ const Contact = () => {
   ];
   
   const socialLinks = [
-    { icon: <FaFacebookF />, href: "#", name: "Facebook" },
-    { icon: <FaInstagram />, href: "#", name: "Instagram" },
-    { icon: <FaLinkedinIn />, href: "#", name: "LinkedIn" },
+    { icon: <FaFacebookF />, href: "https://www.facebook.com/Kaamlay/", name: "Facebook" }, // Replace '#' with your actual social media links
+    { icon: <FaInstagram />, href: "https://www.instagram.com/kaamlay.com1/", name: "Instagram" },
+    // { icon: <FaLinkedinIn />, href: "#", name: "LinkedIn" },
   ];
 
   return (
