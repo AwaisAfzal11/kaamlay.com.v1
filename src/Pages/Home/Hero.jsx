@@ -1,22 +1,34 @@
 import React from 'react';
- // Correctly import the image
+import { Link as RouterLink } from 'react-router-dom';
+import { Link as ScrollLink } from 'react-scroll';
 
 const Hero = () => {
-  // const heroImage = `${process.env.REACT_APP_BASE_URL}/Assets/Home/hero.png` // This line is removed
   return (
-    <div
-      // Changed h-screen to h-[70vh] here
-      className="relative h-[75vh] bg-cover bg-center"
-      // style={{ backgroundImage: `url(${})` }} // Use the imported variable
-    >
-      <div className="absolute inset-0 bg-black opacity-60"></div>
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
-        <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-down">
-          Goldmark Land Ventures
+    <div className="relative bg-gray-100">
+      <div className="relative z-10 container mx-auto px-6 py-24 md:py-32 text-center">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-gray-800 leading-tight mb-4" data-aos="fade-down">
+          Your Trusted Partner for Home & Office Maintenance
         </h1>
-        <p className="text-lg md:text-2xl font-light animate-fade-in-up">
-          Transform Your Property Buying Game Plan
+        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8" data-aos="fade-up">
+          Welcome to Kaamlay.com, Pakistan’s first membership-based professional maintenance company dedicated to simplifying your everyday life.
         </p>
+        <div className="flex justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+          <ScrollLink
+            to="services-section" // This ID will be on the services section below
+            smooth={true}
+            duration={500}
+            offset={-80} // Adjust offset for fixed navbar
+            className="bg-primary cursor-pointer text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-opacity-90 transition-transform transform hover:scale-105"
+          >
+            Our Services
+          </ScrollLink>
+          <RouterLink
+            to="/contact"
+            className="bg-white text-primary border-2 border-primary font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-50 transition-transform transform hover:scale-105"
+          >
+            Contact Us
+          </RouterLink>
+        </div>
       </div>
     </div>
   );

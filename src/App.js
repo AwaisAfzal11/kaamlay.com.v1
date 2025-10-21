@@ -4,9 +4,10 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar/Navbar";
 import Footer from "./Components/Footer/Footer";
 import Home from "./Pages/Home/Home";
+// No longer importing Services page
+import Contact from "./Pages/Contact/Contact";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Contact from "./Pages/Contact/Contact";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          {/* The /services route has been removed */}
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>

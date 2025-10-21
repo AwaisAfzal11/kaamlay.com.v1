@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#BD872E',
+        primary: '#F25F11', // Updated from #BD872E to your new brand color
       }
     },
   },
