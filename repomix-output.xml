@@ -45,40 +45,52 @@ The content is organized as follows:
 .github/workflows/deploy.yml
 .gitignore
 package.json
+public/favicon.ico
 public/index.html
 public/send_email_global.php
 readme.txt
 src/App.js
+src/Assets/Home/cotact1.jpg
+src/Assets/Home/golden_logo.png
+src/Assets/Home/Goldmine-Residence-White-logo.png
+src/Assets/Home/hero1.jpg
+src/Assets/Home/img2.jpg
+src/Assets/Home/img22.jpg
+src/Assets/Home/img33.jpg
+src/Assets/Home/logo.webp
+src/Assets/Home/OurProjects/country-club.jpg
+src/Assets/Home/OurProjects/goldmark-avenue.jpg
+src/Assets/Home/OurProjects/goldmark-ventures.jpg
+src/Assets/Home/OurProjects/Goldmine-Residence.jpg
+src/Assets/Home/OurProjects/GV-image.jpg
+src/Assets/Home/OurProjects/kallar-kahar.jpg
+src/Assets/Home/OurProjects/motorway-south-city.jpg
+src/Assets/Home/ProjectHeroLogos/Gold-Mark-country-club-Final-Logo.png
+src/Assets/Home/ProjectHeroLogos/Goldmark-Avenue-logo.png
+src/Assets/Home/ProjectHeroLogos/goldmark-bussiness-farm-logo.png
+src/Assets/Home/ProjectHeroLogos/Goldmark-land-ventures.jpg
+src/Assets/Home/ProjectHeroLogos/Goldmark-land-ventures.png
+src/Assets/Home/ProjectHeroLogos/Goldmark-valley.png
+src/Assets/Home/ProjectHeroLogos/Goldmine-Residence.png
+src/Assets/Home/ProjectHeroLogos/Motorway-southcity.png
+src/Assets/Home/white_logo.png
+src/Assets/Home/Zemaydar_logo.jpg
+src/Assets/Home/zemaydar.webp
 src/Components/Footer/Footer.jsx
 src/Components/Form/Form23then135.jsx
 src/Components/Navbar/Desktop.jsx
+src/Components/Navbar/logo.webp
 src/Components/Navbar/Mobile.jsx
 src/Components/Navbar/Navbar.css
 src/Components/Navbar/Navbar.jsx
 src/Components/Navbar/WhatsApp.jsx
-src/Data/add-to-Project-Data.js
 src/Data/Navbar.js
-src/Data/ProjectsData.js
 src/index.css
 src/index.js
-src/Pages/About/About.jsx
-src/Pages/About/add_to_about.jsx
 src/Pages/Contact/Contact.jsx
-src/Pages/Home/Benefits.jsx
-src/Pages/Home/ExitStrategy.jsx
 src/Pages/Home/Hero.jsx
 src/Pages/Home/Home.jsx
 src/Pages/Home/Issues.jsx
-src/Pages/Home/Methods.jsx
-src/Pages/Home/Risks.jsx
-src/Pages/Projects/BusinessFarms.jsx
-src/Pages/Projects/CountryClub.jsx
-src/Pages/Projects/GoldmarkAvenue.jsx
-src/Pages/Projects/GoldmarkVentures.jsx
-src/Pages/Projects/GoldmineResidence.jsx
-src/Pages/Projects/KallarKahar.jsx
-src/Pages/Projects/MotorwaySouthCity.jsx
-src/Pages/Projects/ProjectPageTemplate.jsx
 tailwind.config.js
 </directory_structure>
 
@@ -94,6 +106,38 @@ This section contains the contents of the repository's files.
 Create FTP account. Hostinger-Files-CreateFTP
 Add .github folder 
 Create build and push
+</file>
+
+<file path=".github/workflows/deploy.yml">
+name: 🚀 Deploy Website to Hostinger
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  FTP-Deploy-Job:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Build project
+        run: |
+          npm install
+          CI=false npm run build
+
+      - name: 📂 Sync files to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          local-dir: ./build/
+          # Upload into Hostinger public_html (FTP root)
+          server-dir: ./
 </file>
 
 <file path=".gitignore">
@@ -304,6 +348,95 @@ build.zip
 }
 </file>
 
+<file path="public/index.html">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="Zemaydar"
+      content="Recent project.."
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <title>Zemaydar</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+</file>
+
+<file path="public/send_email_global.php">
+<?php
+// Set headers to return JSON and allow cross-origin requests
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
+header('Content-Type: application/json');
+
+// Only process POST requests
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    // --- Sanitize and retrieve form data ---
+    $fullName = isset($_POST['fullName']) ? htmlspecialchars(trim($_POST['fullName'])) : '';
+    $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+    $phone = isset($_POST['phone']) ? htmlspecialchars(trim($_POST['phone'])) : 'Not provided';
+    $messageBody = isset($_POST['message']) ? htmlspecialchars(trim($_POST['message'])) : '';
+
+    // --- Validation ---
+    if (empty($fullName) || empty($email) || empty($messageBody)) {
+        echo json_encode(["status" => "error", "message" => "Please fill in all required fields."]);
+        exit;
+    }
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(["status" => "error", "message" => "Invalid email format."]);
+        exit;
+    }
+    
+    // --- Email Configuration ---
+    $to = "zemaydar@gmail.com";
+    $subject = "New Contact Form Submission from: " . $fullName;
+    
+    // Construct the email message
+    $email_content = "You have received a new message from your website contact form.\n\n"
+                   . "===========================================\n"
+                   . "SENDER DETAILS\n"
+                   . "===========================================\n"
+                   . "Full Name: {$fullName}\n"
+                   . "Email: {$email}\n"
+                   . "Phone Number: {$phone}\n\n"
+                   
+                   . "========================================\n"
+                   . "MESSAGE\n"
+                   . "========================================\n"
+                   . "{$messageBody}\n";
+    
+    // Set email headers
+    $headers = "From: noreply@zemaydar.com\r\n" .
+               "Reply-To: " . $email . "\r\n" .
+               "X-Mailer: PHP/" . phpversion();
+    
+    // --- Send Email ---
+    if (mail($to, $subject, $email_content, $headers)) {
+        // Success response
+        echo json_encode(["status" => "success", "message" => "Thank you for your message! We will get back to you soon."]);
+    } else {
+        // Error response if mail() function fails
+        echo json_encode(["status" => "error", "message" => "Failed to send your message. Please try again later."]);
+    }
+} else {
+    // Handle cases where the request method is not POST
+    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
+}
+?>
+</file>
+
 <file path="readme.txt">
 This project is a JavaScript application that uses npm for dependency management and the React library for building the user interface. Although the active plaintext file (readme.txt) is empty, in a typical React project you might expect:
 
@@ -322,17 +455,7 @@ import Footer from "./Components/Footer/Footer";
 import Home from "./Pages/Home/Home";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import About from "./Pages/About/About";
 import Contact from "./Pages/Contact/Contact";
-
-// Import the new project components
-import MotorwaySouthCity from "./Pages/Projects/MotorwaySouthCity";
-import GoldmarkVentures from "./Pages/Projects/GoldmarkVentures";
-import GoldmineResidence from "./Pages/Projects/GoldmineResidence";
-import BusinessFarms from "./Pages/Projects/BusinessFarms";
-import KallarKahar from "./Pages/Projects/KallarKahar";
-import GoldmarkAvenue from "./Pages/Projects/GoldmarkAvenue";
-import CountryClub from "./Pages/Projects/CountryClub";
 
 
 function App() {
@@ -346,18 +469,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-
-          {/* Project Routes */}
-          <Route path="/projects/motorway-south-city" element={<MotorwaySouthCity />} />
-          <Route path="/projects/goldmark-ventures" element={<GoldmarkVentures />} />
-          <Route path="/projects/goldmine-residence" element={<GoldmineResidence />} />
-          <Route path="/projects/business-farms" element={<BusinessFarms />} />
-          <Route path="/projects/kallar-kahar" element={<KallarKahar />} />
-          <Route path="/projects/goldmark-avenue" element={<GoldmarkAvenue />} />
-          <Route path="/projects/country-club" element={<CountryClub />} />
-
         </Routes>
       </main>
       <Footer />
@@ -1099,14 +1211,14 @@ import './Navbar.css'
 import React from 'react'
 import Mobile from './Mobile'
 import Desktop from './Desktop'
-import WhatsApp from './WhatsApp'
+// import WhatsApp from './WhatsApp'
 
 function Navbar() {
   return (
     <>
       <Mobile />
       <Desktop />
-      <WhatsApp />
+      {/* <WhatsApp /> */}
     </>
   )
 }
@@ -1147,104 +1259,6 @@ export default function WhatsApp() {
 }
 </file>
 
-<file path="src/Data/add-to-Project-Data.js">
-// ProjectsData.js
-
-// Import your project hero images
-import motorwayHero from '../Assets/Home/OurProjects/motorway-south-city.jpg';
-import venturesHero from '../Assets/Home/OurProjects/goldmark-ventures.jpg';
-import residenceHero from '../Assets/Home/OurProjects/Goldmine-Residence.jpg';
-import farmsHero from '../Assets/Home/OurProjects/country-club.jpg';
-import kaharHero from '../Assets/Home/OurProjects/kallar-kahar.jpg';
-import avenueHero from '../Assets/Home/OurProjects/goldmark-avenue.jpg';
-import clubHero from '../Assets/Home/OurProjects/country-club.jpg';
-
-// === STEP 1: Import each project's unique logo ===
-// (Please replace these paths with your actual logo file locations)
-import motorwayLogo from '../Assets/Home/ProjectHeroLogos/Motorway-southcity.png';
-import venturesLogo from '../Assets/Home/ProjectHeroLogos/Goldmark-land-ventures.png';
-import residenceLogo from '../Assets/Home/ProjectHeroLogos/Goldmine-Residence.png';
-import farmsLogo from '../Assets/Home/ProjectHeroLogos/goldmark-bussiness-farm-logo.png';
-import kaharLogo from '../Assets/Home/ProjectHeroLogos/Goldmark-valley.png';
-import avenueLogo from '../Assets/Home/ProjectHeroLogos/Goldmark-valley.png';
-import clubLogo from '../Assets/Home/ProjectHeroLogos/Gold-Mark-country-club-Final-Logo.png';
-
-export const projectsData = [
-  {
-    slug: "motorway-south-city",
-    // === STEP 2: Add the 'logo' property to the hero object ===
-    hero: { title: "Motorway South City – Turning Your Dream Home Into Reality", image: motorwayHero, logo: motorwayLogo },
-    about: "Motorway South City is a modern housing scheme located at a prime spot near the Motorway. Designed to offer transparency, quality, and modern living standards, this project combines peace of mind with world-class facilities.",
-    location: ["Direct access from Motorway", "Easy connectivity to Islamabad and Rawalpindi", "Safe and serene neighborhood"],
-    features: ["Clear land titles and legal approvals", "Master-planned infrastructure", "Wide roads, green belts, and parks", "Residential and commercial plots available"],
-    amenities: ["24/7 water, gas, and electricity", "Mosque, schools, and healthcare facilities", "Shopping areas and community centers"],
-    investment: { title: "Investment Opportunities", points: ["Affordable plots in a prime location", "Rapidly appreciating property value", "Secure and transparent investment"] },
-    paymentPlan: { title: "Payment Plan", points: ["Easy installment plan", "50% booking, 50% at possession"] },
-    cta: "Book your plot today and start building your future home!"
-  },
-  {
-    slug: "goldmark-ventures",
-    hero: { title: "Collective Investment, Collective Growth", image: venturesHero, logo: venturesLogo },
-    about: "Goldmark Ventures introduces Pakistan’s first Collective Land Model, where multiple investors pool their resources to own large-scale land collectively and enjoy greater returns.",
-    location: ["Near Islamabad and Rawalpindi", "Strategically positioned for future development projects"],
-    features: ["Shared ownership of large land parcels", "Transparent and legally protected model", "Low investment entry, high potential return", "Opportunity to participate in mega projects"],
-    amenities: ["Collective farmhouses and commercial land", "Access to future development projects", "Community support and modern infrastructure"],
-    investment: { title: "Why Choose Us", points: ["Secure and regulated investment", "Unique business model with high ROI", "Suitable for both small and large investors"] },
-    cta: "Be part of Pakistan’s most innovative land investment model today!"
-  },
-  {
-    slug: "goldmine-residence",
-    hero: { title: "Luxury Living, Profitable Investment – All in One", image: residenceHero, logo: residenceLogo },
-    about: "Goldmine Residence is a premium Hotel Apartments Project offering both residential comfort and rewarding investment opportunities. Investors receive annual profits as well as property appreciation.",
-    location: ["Prime area in Islamabad", "Easy access to major highways and city centers"],
-    features: ["Luxury hotel apartments", "Shareholding-based investment model", "60% annual profit sharing", "Property rights with resale value"],
-    amenities: ["Modern interiors and premium finishing", "Restaurants, café, gym, and swimming pool", "24/7 security and concierge services"],
-    investment: { title: "Investment Opportunities", points: ["Share-based ownership with guaranteed returns", "Property appreciation for long-term growth"] },
-    cta: "Invest smart, live luxury – Book your share in Goldmine Residence today!"
-  },
-  {
-    slug: "business-farms",
-    hero: { title: "Where Investment Meets Agriculture", image: farmsHero, logo: farmsLogo },
-    about: "Goldmark Business Farms is a unique agro-based project offering farmhouses with integrated dairy farming. It allows investors to combine property ownership with agricultural business income.",
-    location: [],
-    features: ["1, 2, 4, and 8 Kanal business farms", "Dairy farming and milk production units", "Long-term property appreciation", "Healthy and natural environment"],
-    amenities: ["Purpose-built dairy sheds and infrastructure", "Reliable water supply and farm management", "Expert consultancy and marketing support"],
-    investment: { title: "Investment Opportunities", points: ["Dual income: property + business revenue", "Ideal for investors looking for sustainable ventures"] },
-    cta: "Turn your investment into a profitable agri-business today with Goldmark Business Farms."
-  },
-  {
-    slug: "kallar-kahar",
-    hero: { title: "Live Close to Nature, Invest in the Future", image: kaharHero, logo: kaharLogo },
-    about: "Goldmark Valley is located in the beautiful hills of Kallar Kahar, offering a perfect blend of natural beauty and modern residential planning.",
-    location: ["Near Kallar Kahar Lake", "Surrounded by scenic natural landscapes"],
-    features: ["Residential and commercial plots", "High tourism and recreational potential", "Guaranteed long-term property value growth"],
-    amenities: ["Resorts and guest houses", "Shopping areas and community spaces", "Parks, green belts, and recreational facilities"],
-    investment: null,
-    cta: "Invest in the beauty of Kallar Kahar – where nature meets opportunity."
-  },
-  {
-    slug: "goldmark-avenue",
-    hero: { title: "The Future of Real Estate Investment Near Islamabad Airport", image: avenueHero, logo: avenueLogo },
-    about: "Goldmark Avenue is a modern residential and commercial project located just minutes away from the New Islamabad International Airport, making it the ultimate hotspot for living and investment.",
-    location: ["Only a few minutes from Islamabad Airport", "Connected to major roads and CPEC routes"],
-    features: ["Both residential and commercial plots", "Strategic airport-side location", "High ROI and rapid appreciation potential"],
-    amenities: ["Modern infrastructure and wide roads", "Shopping avenue, schools, and healthcare", "24/7 security and gated community"],
-    investment: null,
-    cta: "Secure your investment today in the future hub of Islamabad real estate!"
-  },
-  {
-    slug: "country-club",
-    hero: { title: "Luxury Lifestyle, Peaceful Living", image: clubHero, logo: clubLogo },
-    about: "Goldmark Country Club & Resorts is a premium leisure and residential project offering luxury villas, resorts, and world-class recreational facilities in a serene environment.",
-    location: [],
-    features: ["Country Club with exclusive facilities", "Golf course, swimming pool, and sports areas", "Luxury resorts and holiday villas", "Scenic natural environment"],
-    amenities: ["5-star level dining and spa services", "Gym, clubhouse, and entertainment areas", "Secure gated community"],
-    investment: { title: "Investment Opportunities", points: ["Ideal for vacation homes, rentals, and property appreciation", "Long-term value in lifestyle-based investment"] },
-    cta: "Experience the perfect blend of luxury and leisure – Join Goldmark Country Club & Resorts today."
-  }
-];
-</file>
-
 <file path="src/Data/Navbar.js">
 const Navbar = {
     links: [
@@ -1252,23 +1266,7 @@ const Navbar = {
             name: "Home",
             path: "/"
         },
-        {
-            name: "About",
-            path: "/about"
-        },
-        {
-            name: "Our Projects",
-            path: "#", // This makes it non-clickable
-            submenu: [
-                { name: "Motorway South City", path: "/projects/motorway-south-city" },
-                { name: "Goldmark Ventures", path: "/projects/goldmark-ventures" },
-                { name: "Goldmine Residence", path: "/projects/goldmine-residence" },
-                { name: "Goldmark Business Farms", path: "/projects/business-farms" },
-                { name: "Goldmark Valley Kallar Kahar", path: "/projects/kallar-kahar" },
-                { name: "Goldmark Avenue", path: "/projects/goldmark-avenue" },
-                { name: "Goldmark Country Club", path: "/projects/country-club" },
-            ]
-        },
+        
         {
             name: "Contact",
             path: "/contact"
@@ -1376,172 +1374,6 @@ root.render(
     </HelmetProvider>
   </React.StrictMode>
 );
-</file>
-
-<file path="src/Pages/About/add_to_about.jsx">
-import React from 'react';
-import { Building, Gem, Target, Eye, Heart, ShieldCheck, Zap, TrendingUp, Handshake, CheckCircle2, Star } from 'lucide-react';
-
-// Import your background images
-// import aboutHero from '../../../src/Assets/Home/img33.jpg'; 
-import aboutHero from '../../../src/Assets/Home/img33.jpg'
-import whyUsBg from '../../../src/Assets/Home/img33.jpg';
-
-// Reusable component for informational sections
-const InfoCard = ({ icon, title, children }) => (
-  <section className="mb-16 bg-white p-10 rounded-2xl shadow-lg border border-gray-100">
-    <div className="flex flex-col md:flex-row items-start gap-6">
-      <div className="flex-shrink-0 text-[#BD872E]">{icon}</div>
-      <div className="flex-1">
-        <h2 className="text-3xl font-bold text-black mb-4">{title}</h2>
-        <div className="space-y-4 text-gray-700 leading-relaxed">
-          {children}
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-const About = () => {
-  const missionPoints = [
-    { icon: <ShieldCheck size={24} />, text: "Deliver safe, transparent, and legally compliant investment opportunities." },
-    { icon: <Zap size={24} />, text: "Pioneer collective land and development models in Pakistan." },
-    { icon: <Handshake size={24} />, text: "Bridge the gap between developers and individual investors." },
-    { icon: <TrendingUp size={24} />, text: "Contribute towards sustainable growth in real estate and agriculture." },
-  ];
-
-  const coreValues = [
-    { icon: <Star size={32} />, title: "Integrity", text: "Every project built on honesty and trust." },
-    { icon: <Star size={32} />, title: "Transparency", text: "Clear, documented, and litigation-free structures." },
-    { icon: <Star size={32} />, title: "Innovation", text: "Modern investment and development models." },
-    { icon: <Star size={32} />, title: "Growth", text: "Long-term value for investors and developers." },
-    { icon: <Star size={32} />, title: "Responsibility", text: "Ensuring sustainable and ethical practices." },
-  ];
-
-  const whyChooseUsPoints = [
-    "Legally registered with SECP and FBR.",
-    "Clear and transparent land acquisition processes.",
-    "Unique collective investment model for all.",
-    "Trusted by developers for litigation-free land.",
-    "Long-term vision for profitability & sustainability."
-  ];
-
-  return (
-    <>
-      {/* 1. Hero Section (70vh) */}
-      <div
-        className="relative h-[80vh] bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url(${aboutHero})` }}
-      >
-        <div className="absolute inset-0 bg-black/60"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-            Redefining Responsible Investing<span className="text-[#BD872E]">.</span>
-          </h1>
-          <p className="mt-4 text-lg md:text-xl font-light max-w-3xl">
-            Combining corporate strength with innovative investment models to build a transparent and prosperous future.
-          </p>
-        </div>
-      </div>
-      {/* 2. Main Content Section */}
-      <div className="bg-gray-50 py-24">
-        <div className="container mx-auto px-6 max-w-5xl">
-
-          {/* Intro Sections */}
-          <InfoCard icon={<Building size={50} />} title="Zimaydar Ventures – The Company">
-            <p>Zimaydar Ventures (Private) Limited is a SECP and FBR registered and approved company, operating as a professional platform for investment and development.</p>
-            <p>We are dedicated to introducing transparent, secure, and sustainable investment opportunities in Pakistan, building trust by combining innovation with responsibility.</p>
-          </InfoCard>
-
-          <InfoCard icon={<Gem size={50} />} title="Goldmark Ventures – The Concept">
-            <p>Goldmark Ventures is an innovative concept designed to transform collective investment into a structured model where investors pool resources to acquire large-scale land, which is then developed into housing, agricultural, and commercial projects.</p>
-          </InfoCard>
-
-          {/* Purpose Section */}
-          <section className="text-center mb-24">
-            <h2 className="text-3xl font-bold text-black mb-10">Our Dual Purpose</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-amber-50 p-8 rounded-2xl border-t-4 border-[#BD872E]">
-                <Building size={40} className="mx-auto text-[#BD872E] mb-4" />
-                <h3 className="text-xl font-bold text-black mb-2">For Developers</h3>
-                <p className="text-gray-700">To provide clear, transparent, and litigation-free land in large, compact blocks for sustainable development.</p>
-              </div>
-              <div className="bg-amber-50 p-8 rounded-2xl border-t-4 border-[#BD872E]">
-                <Handshake size={40} className="mx-auto text-[#BD872E] mb-4" />
-                <h3 className="text-xl font-bold text-black mb-2">For Investors</h3>
-                <p className="text-gray-700">To empower individuals with access to clean, transparent, and secure investment opportunities.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Mission & Vision Section */}
-          <section className="mb-24 bg-gray-800 text-white rounded-2xl p-12 grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <Target size={32} className="text-[#BD872E]" />
-                <h2 className="text-3xl font-bold">Our Mission</h2>
-              </div>
-              <ul className="space-y-4">
-                {missionPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 text-[#BD872E] mt-1">{point.icon}</div>
-                    <p className="text-gray-300">{point.text}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <Eye size={32} className="text-[#BD872E]" />
-                <h2 className="text-3xl font-bold">Our Vision</h2>
-              </div>
-              <p className="text-gray-300 leading-relaxed">
-                We envision a future where investment in Pakistan is responsible, collective, and transparent, offering value not only in financial returns but also in nation-building.
-              </p>
-            </div>
-          </section>
-
-          {/* Core Values Section */}
-          <section className="text-center mb-24">
-            <h2 className="text-3xl font-bold text-black mb-12">Our Core Values</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-              {coreValues.map((value) => (
-                <div key={value.title} className="flex flex-col items-center">
-                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-100 text-[#BD872E] mb-4">
-                    {value.icon}
-                  </div>
-                  <h3 className="font-bold text-black">{value.title}</h3>
-                  <p className="text-gray-600 text-sm">{value.text}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      </div>
-
-      {/* Why Choose Us Section */}
-      <section
-        className="relative py-24 bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url(${whyUsBg})` }}
-      >
-        <div className="absolute inset-0 bg-black/75"></div>
-        <div className="relative z-10 container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-white mb-10">Why Choose Zemaydar Ventures?</h2>
-          <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-            {whyChooseUsPoints.map((point, index) => (
-              <div key={index} className="flex items-center text-left">
-                <CheckCircle2 className="h-6 w-6 text-green-400 mr-4 flex-shrink-0" />
-                <span className="text-white text-lg">{point}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
-
-export default About;
 </file>
 
 <file path="src/Pages/Contact/Contact.jsx">
@@ -1699,130 +1531,6 @@ const Contact = () => {
 export default Contact;
 </file>
 
-<file path="src/Pages/Home/Benefits.jsx">
-import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
-import img2 from '../../Assets/Home/img2.jpg'; // Correctly import the image
-
-const benefits = [
-  "Strategic Location",
-  "Verified Ownership",
-  "Guaranteed Buy-Back Option",
-  "Zero Service Fees",
-  "Minimum Investment",
-  "Easy Entry - Just 1 Kanal",
-  "Perfect for Everyone"
-];
-
-const Benefits = () => {
-  // const img2 = `${process.env.REACT_APP_BASE_URL}/Assets/Home/img2.jpg` // This line is removed
-  return (
-    // 1. Container with background image
-    <div 
-      className="relative py-24 bg-cover bg-center bg-fixed" // Added bg-fixed for a parallax effect
-      style={{ backgroundImage: `url(${img2})` }} // Use the imported variable
-    >
-      {/* 2. A more dynamic gradient overlay for better contrast and visual appeal */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-[#BD872E]/80 to-black/50"></div>
-
-      {/* 3. Content container is relative to sit on top */}
-      <div className="relative container mx-auto px-6 z-10">
-        <div className="text-center mb-16">
-          {/* 4. Enhanced typography for the main heading and subheading */}
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg">
-            Member Benefits
-          </h2>
-          <p className="text-lg text-gray-200 mt-4 max-w-3xl mx-auto">
-            Unlock exclusive advantages with Goldmark Land Ventures.
-          </p>
-        </div>
-        
-        {/* 5. Grid for the benefit cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {benefits.map((benefit, index) => (
-            // 6. Redesigned "glassmorphism" card with improved styling and hover effects
-            <div 
-              key={index} 
-              className="bg-black/30 backdrop-blur-lg p-6 rounded-xl border border-white/20 shadow-xl group transform hover:-translate-y-2 transition-all duration-300 ease-in-out hover:shadow-2xl hover:border-white/40"
-            >
-              <div className="flex items-center space-x-4">
-                {/* 7. Icon is now inside a colored circle for emphasis */}
-                <div className="flex-shrink-0 w-12 h-12 bg-[#BD872E] rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <CheckCircle2 className="h-7 w-7 text-white" />
-                </div>
-                <div>
-                  {/* 8. Updated text style for clarity */}
-                  <h3 className="text-xl font-bold text-white">{benefit}</h3>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default Benefits;
-</file>
-
-<file path="src/Pages/Home/ExitStrategy.jsx">
-import React from 'react';
-import { Briefcase, TrendingUp, Repeat, UserCheck } from 'lucide-react';
-
-const strategies = [
-    { icon: <Briefcase size={32}/>, title: 'Buyback Payment', description: 'The company can repurchase the property after two years.' },
-    { icon: <UserCheck size={32}/>, title: 'Upcoming Participation', description: 'Opportunity to join future housing projects.' },
-    { icon: <TrendingUp size={32}/>, title: 'High Returns', description: 'Potential for profit through bulk land sales.' },
-    { icon: <Repeat size={32}/>, title: 'Transferring', description: 'The certificate of ownership can be transferred.' },
-];
-
-const ExitStrategy = () => {
-    return (
-        // 1. Using a clean white background
-        <div className="py-24 bg-white">
-            <div className="container mx-auto px-6">
-                
-                {/* 2. Consistent Typography and Branding */}
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-extrabold text-black">
-                        Your Exit Strategy<span className="text-[#BD872E]">.</span>
-                    </h2>
-                    <p className="text-lg text-gray-700 mt-4 max-w-3xl mx-auto">
-                        We provide clear and flexible options for your investment journey.
-                    </p>
-                </div>
-
-                {/* 3. Grid for the redesigned strategy cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {strategies.map((strategy, index) => (
-                        
-                        // 4. Redesigned Card with a clean, professional look and subtle hover effect
-                        <div 
-                            key={index} 
-                            className="text-center p-8 bg-white rounded-xl border border-gray-200 shadow-lg transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl hover:border-[#BD872E]"
-                        >
-                            {/* 5. Emphasized Icon in a styled, thematic container */}
-                            <div className="mx-auto mb-6 w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center">
-                                <div className="text-[#BD872E]">
-                                    {strategy.icon}
-                                </div>
-                            </div>
-                            
-                            {/* 6. Clear and readable typography for title and description */}
-                            <h3 className="text-xl font-bold text-black mb-2">{strategy.title}</h3>
-                            <p className="text-gray-600">{strategy.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default ExitStrategy;
-</file>
-
 <file path="src/Pages/Home/Hero.jsx">
 import React from 'react';
 import heroImage from '../../Assets/Home/hero1.jpg'; // Correctly import the image
@@ -1855,20 +1563,13 @@ export default Hero;
 import React from 'react';
 import Hero from './Hero';
 import Issues from './Issues';
-import Benefits from './Benefits';
-import Risks from './Risks';
-import Methods from './Methods';
-import ExitStrategy from './ExitStrategy';
 
 const Home = () => {
   return (
     <>
       <Hero />
       <Issues />
-       <Benefits /> 
-       <Methods />
-      <Risks />
-      <ExitStrategy /> 
+       
     </>
   );
 }
@@ -1928,352 +1629,6 @@ const Issues = () => {
 export default Issues;
 </file>
 
-<file path="src/Pages/Home/Methods.jsx">
-import React from 'react';
-
-const investmentMethods = [
-  {
-    option: "01",
-    tenure: "18 Months",
-    title: "(INTAQAL)",
-    details: [
-      "Buy 5 Marla or upto 4 Kanal Land.",
-      "Get Intaqal of that land in your name (Govt. transfer charges will be applicable).",
-      "The company executes a Buy Back Agreement with you at Rs: 880,000 per kanal."
-    ]
-  },
-  {
-    option: "02",
-    tenure: "18 Months",
-    title: "(POST DATED CHEQUES)",
-    details: [
-      "Buy 5 Marla or upto 4 Kanal Land.",
-      "The company executes a Buy Back Agreement with you at Rs: 880,000 per kanal and provides cheques of the same value. Transfer that land into the company name.",
-      "(The company will pay the transfer charges)."
-    ]
-  },
-  {
-    option: "03",
-    tenure: "18 Months",
-    title: "(CERTIFICATE)",
-    details: [
-      "Buy 5 Marla or upto 4 Kanal Land.",
-      "Company executes a Buy Back Agreement with you at Rs: 880,000 per kanal and provides a certificate of ownership equal to the Purchase Value of the land. Transfer that land into the company name.",
-      "(Company will pay the transfer charges)."
-    ]
-  }
-];
-
-const Methods = () => {
-  return (
-    // 1. Using a clean white background as shown in the image
-    <div className="py-24 bg-white">
-      <div className="container mx-auto px-6">
-        
-        {/* 2. Replicating the title structure from the image */}
-        <div className="text-center mb-16">
-          <p className="text-sm font-medium text-[#BD872E] tracking-widest mb-2">GOLDMARK LAND VENTURES</p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-black">
-            THE WAY TO JOIN US
-          </h2>
-        </div>
-
-        {/* 3. Grid for the investment method cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-          {investmentMethods.map((method) => (
-            
-            // 4. Building the card to precisely match the image's design
-            <div 
-              key={method.option} 
-              className="bg-white rounded-lg shadow-xl flex flex-col overflow-hidden border border-gray-200"
-            >
-              {/* Card Header */}
-              <div className="bg-[#BD872E] text-white p-5 text-center">
-                <h3 className="text-lg font-bold">OPTION {method.option}</h3>
-                <p className="font-medium">(Tenure {method.tenure})</p>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-8 flex flex-col flex-grow">
-                <h4 className="text-3xl font-bold text-[#BD872E] text-center mb-8">
-                  {method.title}
-                </h4>
-
-                {/* Details separated by lines */}
-                <div className="space-y-6 text-center text-gray-600 flex-grow">
-                  {method.details.map((point, index) => (
-                    <p key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
-                      {point}
-                    </p>
-                  ))}
-                </div>
-                
-                {/* ROI Button/Badge */}
-                <div className="mt-8 text-center">
-                  <div className="inline-block bg-[#BD872E] text-white font-bold py-3 px-8 rounded-md">
-                    ROI: 50% & Above*
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default Methods;
-</file>
-
-<file path="src/Pages/Home/Risks.jsx">
-import React from 'react';
-import { ShieldAlert } from 'lucide-react';
-
-const risks = [
-  "Unverified and disputed properties",
-  "No management support post-purchase",
-  "Discrepancies in land measurements"
-];
-
-const Risks = () => {
-  return (
-    // 1. Using a very light, thematic background color to create a subtle "caution" feel
-    <div className="py-24 bg-amber-50">
-      <div className="container mx-auto px-6">
-        
-        {/* 2. Consistent Typography and Branding */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-black">
-            Risks of Investing Without Expertise<span className="text-[#BD872E]">.</span>
-          </h2>
-          <p className="text-lg text-gray-700 mt-4 max-w-3xl mx-auto">
-            Navigating the raw land market alone can be perilous. Here's why.
-          </p>
-        </div>
-
-        {/* 3. A centered, vertical list for a more focused and readable presentation */}
-        <div className="max-w-4xl mx-auto space-y-6">
-          {risks.map((risk, index) => (
-            
-            // 4. Redesigned Risk Item with clear visual hierarchy
-            <div 
-              key={index} 
-              className="bg-white rounded-xl shadow-md p-6 flex items-start gap-5 transform hover:scale-105 transition-transform duration-300"
-            >
-              {/* 5. Emphasized Icon in a branded container */}
-              <div className="flex-shrink-0 w-12 h-12 bg-[#BD872E] rounded-full flex items-center justify-center">
-                <ShieldAlert className="h-6 w-6 text-white" />
-              </div>
-
-              {/* 6. Larger, more impactful text for the risk description */}
-              <div>
-                <p className="text-xl font-semibold text-black">{risk}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default Risks;
-</file>
-
-<file path="src/Pages/Projects/BusinessFarms.jsx">
-import React from 'react';
-import ProjectPageTemplate from './ProjectPageTemplate';
-import { projectsData } from '../../Data/ProjectsData';
-
-const GoldmarkVentures = () => {
-  const project = projectsData.find(p => p.slug === 'business-farms');
-  return <ProjectPageTemplate project={project} />;
-};
-
-export default GoldmarkVentures;
-</file>
-
-<file path="src/Pages/Projects/CountryClub.jsx">
-import React from 'react';
-import ProjectPageTemplate from './ProjectPageTemplate';
-import { projectsData } from '../../Data/ProjectsData';
-
-const GoldmarkVentures = () => {
-  const project = projectsData.find(p => p.slug === 'country-club');
-  return <ProjectPageTemplate project={project} />;
-};
-
-export default GoldmarkVentures;
-</file>
-
-<file path="src/Pages/Projects/GoldmarkAvenue.jsx">
-import React from 'react';
-import ProjectPageTemplate from './ProjectPageTemplate';
-import { projectsData } from '../../Data/ProjectsData';
-
-const GoldmarkVentures = () => {
-  const project = projectsData.find(p => p.slug === 'goldmark-avenue');
-  return <ProjectPageTemplate project={project} />;
-};
-
-export default GoldmarkVentures;
-</file>
-
-<file path="src/Pages/Projects/GoldmarkVentures.jsx">
-import React from 'react';
-import ProjectPageTemplate from './ProjectPageTemplate';
-import { projectsData } from '../../Data/ProjectsData';
-
-const GoldmarkVentures = () => {
-  const project = projectsData.find(p => p.slug === 'goldmark-ventures');
-  return <ProjectPageTemplate project={project} />;
-};
-
-export default GoldmarkVentures;
-</file>
-
-<file path="src/Pages/Projects/GoldmineResidence.jsx">
-import React from 'react';
-import ProjectPageTemplate from './ProjectPageTemplate';
-import { projectsData } from '../../Data/ProjectsData';
-
-const GoldmarkVentures = () => {
-  const project = projectsData.find(p => p.slug === 'goldmine-residence');
-  return <ProjectPageTemplate project={project} />;
-};
-
-export default GoldmarkVentures;
-</file>
-
-<file path="src/Pages/Projects/KallarKahar.jsx">
-import React from 'react';
-import ProjectPageTemplate from './ProjectPageTemplate';
-import { projectsData } from '../../Data/ProjectsData';
-
-const GoldmarkVentures = () => {
-  const project = projectsData.find(p => p.slug === 'kallar-kahar');
-  return <ProjectPageTemplate project={project} />;
-};
-
-export default GoldmarkVentures;
-</file>
-
-<file path="src/Pages/Projects/MotorwaySouthCity.jsx">
-import React from 'react';
-import ProjectPageTemplate from './ProjectPageTemplate';
-import { projectsData } from '../../Data/ProjectsData';
-
-const MotorwaySouthCity = () => {
-  const project = projectsData.find(p => p.slug === 'motorway-south-city');
-  return <ProjectPageTemplate project={project} />;
-};
-
-export default MotorwaySouthCity;
-</file>
-
-<file path="src/Pages/Projects/ProjectPageTemplate.jsx">
-// ProjectPageTemplate.jsx
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { CheckCircle2, MapPin, Star, Sun, DollarSign, Briefcase } from 'lucide-react';
-
-const FeatureList = ({ items }) => (
-  <ul className="space-y-3">
-    {items.map((item, index) => (
-      <li key={index} className="flex items-start">
-        <CheckCircle2 className="h-5 w-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
-        <span>{item}</span>
-      </li>
-    ))}
-  </ul>
-);
-
-const InfoCard = ({ icon, title, items }) => (
-  <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 h-full">
-    <div className="flex items-center gap-4 mb-4">
-      {icon}
-      <h3 className="text-2xl font-bold text-black">{title}</h3>
-    </div>
-    {items && items.length > 0 ? <FeatureList items={items} /> : <p className="text-gray-500">Details coming soon.</p>}
-  </div>
-);
-
-const ProjectPageTemplate = ({ project }) => {
-  if (!project) return <div>Project not found.</div>;
-
-  return (
-    <>
-      {/* Hero Section */}
-      <div 
-        className="relative h-[75vh] bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url(${project.hero.image})` }}
-      >
-        <div className="absolute inset-0 bg-black/60"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
-
-          {/* === UPDATED H1 SECTION === */}
-          <h1 className="flex flex-col items-center justify-center gap-4 text-4xl md:text-5xl font-extrabold leading-tight max-w-5xl">
-            {/* CHANGE 1: The logo is now bigger. Adjust h-20/h-24 as needed. */}
-            {project.hero.logo && (
-              <img 
-                src={project.hero.logo} 
-                alt={`${project.hero.title} Logo`} 
-                className="h-[130px] md:h-[170px] w-auto mb-2" // Increased height and added a little margin-bottom
-              />
-            )}
-            {/* CHANGE 2: The text will now always be below the logo because `md:flex-row` was removed from the h1. */}
-            <span>{project.hero.title}</span>
-          </h1>
-
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="bg-gray-50 py-24">
-        <div className="container mx-auto px-6">
-          {/* About Section */}
-          <section className="max-w-4xl mx-auto text-center mb-20">
-            <h2 className="text-3xl font-bold text-black mb-4">About The Project</h2>
-            <p className="text-lg text-gray-700 leading-relaxed">{project.about}</p>
-          </section>
-
-          {/* Details Grid */}
-          <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
-            <InfoCard icon={<MapPin size={28} className="text-[#BD872E]" />} title="Location" items={project.location} />
-            <InfoCard icon={<Star size={28} className="text-[#BD872E]" />} title="Key Features" items={project.features} />
-            <InfoCard icon={<Sun size={28} className="text-[#BD872E]" />} title="Amenities" items={project.amenities} />
-          </section>
-
-          {/* Investment & Payment Plan */}
-          {(project.investment || project.paymentPlan) && (
-            <section className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 mb-20">
-              {project.investment && (
-                <InfoCard icon={<DollarSign size={28} className="text-[#BD872E]" />} title={project.investment.title} items={project.investment.points} />
-              )}
-              {project.paymentPlan && (
-                 <InfoCard icon={<Briefcase size={28} className="text-[#BD872E]" />} title={project.paymentPlan.title} items={project.paymentPlan.points} />
-              )}
-            </section>
-          )}
-
-          {/* CTA Section */}
-          <section className="bg-[#BD872E] text-white text-center p-12 rounded-2xl max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4">{project.cta}</h2>
-            <Link to="/contact" className="mt-6 inline-block bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-gray-200 transition-colors">
-              Contact Us Now
-            </Link>
-          </section>
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default ProjectPageTemplate;
-</file>
-
 <file path="tailwind.config.js">
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -2289,391 +1644,6 @@ module.exports = {
   },
   plugins: [],
 }
-</file>
-
-<file path="public/index.html">
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="Zemaydar"
-      content="Recent project.."
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>Zemaydar</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
-</html>
-</file>
-
-<file path="src/Data/ProjectsData.js">
-// ProjectsData.js
-
-// Import your project hero images
-import motorwayHero from '../Assets/Home/OurProjects/motorway-south-city.jpg';
-import venturesHero from '../Assets/Home/OurProjects/goldmark-ventures.jpg';
-import residenceHero from '../Assets/Home/OurProjects/Goldmine-Residence.jpg';
-import farmsHero from '../Assets/Home/OurProjects/country-club.jpg';
-import kaharHero from '../Assets/Home/OurProjects/kallar-kahar.jpg';
-import avenueHero from '../Assets/Home/OurProjects/goldmark-avenue.jpg';
-import clubHero from '../Assets/Home/OurProjects/country-club.jpg';
-
-// === STEP 1: Import each project's unique logo ===
-// (Please replace these paths with your actual logo file locations)
-import motorwayLogo from '../Assets/Home/ProjectHeroLogos/Motorway-southcity.png';
-import venturesLogo from '../Assets/Home/ProjectHeroLogos/Goldmark-land-ventures.png';
-import residenceLogo from '../Assets/Home/ProjectHeroLogos/Goldmine-Residence.png';
-import farmsLogo from '../Assets/Home/ProjectHeroLogos/goldmark-bussiness-farm-logo.png';
-import kaharLogo from '../Assets/Home/ProjectHeroLogos/Goldmark-valley.png';
-import avenueLogo from '../Assets/Home/ProjectHeroLogos/Goldmark-valley.png';
-import clubLogo from '../Assets/Home/ProjectHeroLogos/Gold-Mark-country-club-Final-Logo.png';
-
-export const projectsData = [
-  {
-    slug: "motorway-south-city",
-    // === STEP 2: Add the 'logo' property to the hero object ===
-    hero: { title: "Motorway South City – Turning Your Dream Home Into Reality", image: motorwayHero, logo: motorwayLogo },
-    about: "Motorway South City is a modern housing scheme located at a prime spot near the Motorway. Designed to offer transparency, quality, and modern living standards, this project combines peace of mind with world-class facilities.",
-    location: ["Direct access from Motorway", "Easy connectivity to Islamabad and Rawalpindi", "Safe and serene neighborhood"],
-    features: ["Clear land titles and legal approvals", "Master-planned infrastructure", "Wide roads, green belts, and parks", "Residential and commercial plots available"],
-    amenities: ["24/7 water, gas, and electricity", "Mosque, schools, and healthcare facilities", "Shopping areas and community centers"],
-    investment: { title: "Investment Opportunities", points: ["Affordable plots in a prime location", "Rapidly appreciating property value", "Secure and transparent investment"] },
-    paymentPlan: { title: "Payment Plan", points: ["Easy installment plan", "50% booking, 50% at possession"] },
-    cta: "Book your plot today and start building your future home!"
-  },
-  {
-    slug: "goldmark-ventures",
-    hero: { title: "Collective Investment, Collective Growth", image: venturesHero, logo: venturesLogo },
-    about: "Goldmark Ventures introduces Pakistan’s first Collective Land Model, where multiple investors pool their resources to own large-scale land collectively and enjoy greater returns.",
-    location: ["Near Islamabad and Rawalpindi", "Strategically positioned for future development projects"],
-    features: ["Shared ownership of large land parcels", "Transparent and legally protected model", "Low investment entry, high potential return", "Opportunity to participate in mega projects"],
-    amenities: ["Collective farmhouses and commercial land", "Access to future development projects", "Community support and modern infrastructure"],
-    investment: { title: "Why Choose Us", points: ["Secure and regulated investment", "Unique business model with high ROI", "Suitable for both small and large investors"] },
-    cta: "Be part of Pakistan’s most innovative land investment model today!"
-  },
-  {
-    slug: "goldmine-residence",
-    hero: { title: "Luxury Living, Profitable Investment – All in One", image: residenceHero, logo: residenceLogo },
-    about: "Goldmine Residence is a premium Hotel Apartments Project offering both residential comfort and rewarding investment opportunities. Investors receive annual profits as well as property appreciation.",
-    location: ["Prime area in Islamabad", "Easy access to major highways and city centers"],
-    features: ["Luxury hotel apartments", "Shareholding-based investment model", "60% annual profit sharing", "Property rights with resale value"],
-    amenities: ["Modern interiors and premium finishing", "Restaurants, café, gym, and swimming pool", "24/7 security and concierge services"],
-    investment: { title: "Investment Opportunities", points: ["Share-based ownership with guaranteed returns", "Property appreciation for long-term growth"] },
-    cta: "Invest smart, live luxury – Book your share in Goldmine Residence today!"
-  },
-  {
-    slug: "business-farms",
-    hero: { title: "Where Investment Meets Agriculture", image: farmsHero, logo: farmsLogo },
-    about: "Goldmark Business Farms is a unique agro-based project offering farmhouses with integrated dairy farming. It allows investors to combine property ownership with agricultural business income.",
-    location: [],
-    features: ["1, 2, 4, and 8 Kanal business farms", "Dairy farming and milk production units", "Long-term property appreciation", "Healthy and natural environment"],
-    amenities: ["Purpose-built dairy sheds and infrastructure", "Reliable water supply and farm management", "Expert consultancy and marketing support"],
-    investment: { title: "Investment Opportunities", points: ["Dual income: property + business revenue", "Ideal for investors looking for sustainable ventures"] },
-    cta: "Turn your investment into a profitable agri-business today with Goldmark Business Farms."
-  },
-  {
-    slug: "kallar-kahar",
-    hero: { title: "Live Close to Nature, Invest in the Future", image: kaharHero, logo: kaharLogo },
-    about: "Goldmark Valley is located in the beautiful hills of Kallar Kahar, offering a perfect blend of natural beauty and modern residential planning.",
-    location: ["Near Kallar Kahar Lake", "Surrounded by scenic natural landscapes"],
-    features: ["Residential and commercial plots", "High tourism and recreational potential", "Guaranteed long-term property value growth"],
-    amenities: ["Resorts and guest houses", "Shopping areas and community spaces", "Parks, green belts, and recreational facilities"],
-    investment: null,
-    cta: "Invest in the beauty of Kallar Kahar – where nature meets opportunity."
-  },
-  {
-    slug: "goldmark-avenue",
-    hero: { title: "The Future of Real Estate Investment Near Islamabad Airport", image: avenueHero, logo: avenueLogo },
-    about: "Goldmark Avenue is a modern residential and commercial project located just minutes away from the New Islamabad International Airport, making it the ultimate hotspot for living and investment.",
-    location: ["Only a few minutes from Islamabad Airport", "Connected to major roads and CPEC routes"],
-    features: ["Both residential and commercial plots", "Strategic airport-side location", "High ROI and rapid appreciation potential"],
-    amenities: ["Modern infrastructure and wide roads", "Shopping avenue, schools, and healthcare", "24/7 security and gated community"],
-    investment: null,
-    cta: "Secure your investment today in the future hub of Islamabad real estate!"
-  },
-  {
-    slug: "country-club",
-    hero: { title: "Luxury Lifestyle, Peaceful Living", image: clubHero, logo: clubLogo },
-    about: "Goldmark Country Club & Resorts is a premium leisure and residential project offering luxury villas, resorts, and world-class recreational facilities in a serene environment.",
-    location: [],
-    features: ["Country Club with exclusive facilities", "Golf course, swimming pool, and sports areas", "Luxury resorts and holiday villas", "Scenic natural environment"],
-    amenities: ["5-star level dining and spa services", "Gym, clubhouse, and entertainment areas", "Secure gated community"],
-    investment: { title: "Investment Opportunities", points: ["Ideal for vacation homes, rentals, and property appreciation", "Long-term value in lifestyle-based investment"] },
-    cta: "Experience the perfect blend of luxury and leisure – Join Goldmark Country Club & Resorts today."
-  }
-];
-</file>
-
-<file path="src/Pages/About/About.jsx">
-import React from 'react';
-import { Building, Gem, Target, Eye, Heart, ShieldCheck, Zap, TrendingUp, Handshake, CheckCircle2, Star } from 'lucide-react';
-
-// Import your background images
-// import aboutHero from '../../../src/Assets/Home/img33.jpg'; 
-import aboutHero from '../../../src/Assets/Home/img33.jpg'
-import whyUsBg from '../../../src/Assets/Home/img33.jpg';
-
-// Reusable component for informational sections
-const InfoCard = ({ icon, title, children }) => (
-  <section className="mb-16 bg-white p-10 rounded-2xl shadow-lg border border-gray-100">
-    <div className="flex flex-col md:flex-row items-start gap-6">
-      <div className="flex-shrink-0 text-[#BD872E]">{icon}</div>
-      <div className="flex-1">
-        <h2 className="text-3xl font-bold text-black mb-4">{title}</h2>
-        <div className="space-y-4 text-gray-700 leading-relaxed">
-          {children}
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-const About = () => {
-  const missionPoints = [
-    { icon: <ShieldCheck size={24} />, text: "Deliver safe, transparent, and legally compliant investment opportunities." },
-    { icon: <Zap size={24} />, text: "Pioneer collective land and development models in Pakistan." },
-    { icon: <Handshake size={24} />, text: "Bridge the gap between developers and individual investors." },
-    { icon: <TrendingUp size={24} />, text: "Contribute towards sustainable growth in real estate and agriculture." },
-  ];
-
-  const coreValues = [
-    { icon: <Star size={32} />, title: "Integrity", text: "Every project built on honesty and trust." },
-    { icon: <Star size={32} />, title: "Transparency", text: "Clear, documented, and litigation-free structures." },
-    { icon: <Star size={32} />, title: "Innovation", text: "Modern investment and development models." },
-    { icon: <Star size={32} />, title: "Growth", text: "Long-term value for investors and developers." },
-    { icon: <Star size={32} />, title: "Responsibility", text: "Ensuring sustainable and ethical practices." },
-  ];
-
-  const whyChooseUsPoints = [
-    "Legally registered with SECP and FBR.",
-    "Clear and transparent land acquisition processes.",
-    "Unique collective investment model for all.",
-    "Trusted by developers for litigation-free land.",
-    "Long-term vision for profitability & sustainability."
-  ];
-
-  return (
-    <>
-      {/* 1. Hero Section (70vh) */}
-      <div
-        className="relative h-[80vh] bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url(${aboutHero})` }}
-      >
-        <div className="absolute inset-0 bg-black/60"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-            Redefining Responsible Investing<span className="text-[#BD872E]">.</span>
-          </h1>
-          <p className="mt-4 text-lg md:text-xl font-light max-w-3xl">
-            Combining corporate strength with innovative investment models to build a transparent and prosperous future.
-          </p>
-        </div>
-      </div>
-      {/* 2. Main Content Section */}
-      <div className="bg-gray-50 py-24">
-        <div className="container mx-auto px-6 max-w-5xl">
-
-          {/* Intro Sections */}
-          <InfoCard icon={<Building size={50} />} title="Zimaydar Ventures – The Company">
-            <p>Zimaydar Ventures (Private) Limited is a SECP and FBR registered and approved company, operating as a professional platform for investment and development.</p>
-            <p>We are dedicated to introducing transparent, secure, and sustainable investment opportunities in Pakistan, building trust by combining innovation with responsibility.</p>
-          </InfoCard>
-
-          <InfoCard icon={<Gem size={50} />} title="Goldmark Ventures – The Concept">
-            <p>Goldmark Ventures is an innovative concept designed to transform collective investment into a structured model where investors pool resources to acquire large-scale land, which is then developed into housing, agricultural, and commercial projects.</p>
-          </InfoCard>
-
-          {/* Purpose Section */}
-          <section className="text-center mb-24">
-            <h2 className="text-3xl font-bold text-black mb-10">Our Dual Purpose</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-amber-50 p-8 rounded-2xl border-t-4 border-[#BD872E]">
-                <Building size={40} className="mx-auto text-[#BD872E] mb-4" />
-                <h3 className="text-xl font-bold text-black mb-2">For Developers</h3>
-                <p className="text-gray-700">To provide clear, transparent, and litigation-free land in large, compact blocks for sustainable development.</p>
-              </div>
-              <div className="bg-amber-50 p-8 rounded-2xl border-t-4 border-[#BD872E]">
-                <Handshake size={40} className="mx-auto text-[#BD872E] mb-4" />
-                <h3 className="text-xl font-bold text-black mb-2">For Investors</h3>
-                <p className="text-gray-700">To empower individuals with access to clean, transparent, and secure investment opportunities.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Mission & Vision Section */}
-          <section className="mb-24 bg-gray-800 text-white rounded-2xl p-12 grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <Target size={32} className="text-[#BD872E]" />
-                <h2 className="text-3xl font-bold">Our Mission</h2>
-              </div>
-              <ul className="space-y-4">
-                {missionPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 text-[#BD872E] mt-1">{point.icon}</div>
-                    <p className="text-gray-300">{point.text}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <Eye size={32} className="text-[#BD872E]" />
-                <h2 className="text-3xl font-bold">Our Vision</h2>
-              </div>
-              <p className="text-gray-300 leading-relaxed">
-                We envision a future where investment in Pakistan is responsible, collective, and transparent, offering value not only in financial returns but also in nation-building.
-              </p>
-            </div>
-          </section>
-
-          {/* Core Values Section */}
-          <section className="text-center mb-24">
-            <h2 className="text-3xl font-bold text-black mb-12">Our Core Values</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-              {coreValues.map((value) => (
-                <div key={value.title} className="flex flex-col items-center">
-                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-100 text-[#BD872E] mb-4">
-                    {value.icon}
-                  </div>
-                  <h3 className="font-bold text-black">{value.title}</h3>
-                  <p className="text-gray-600 text-sm">{value.text}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      </div>
-
-      {/* Why Choose Us Section */}
-      <section
-        className="relative py-24 bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url(${whyUsBg})` }}
-      >
-        <div className="absolute inset-0 bg-black/75"></div>
-        <div className="relative z-10 container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-white mb-10">Why Choose Zemaydar Ventures?</h2>
-          <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-            {whyChooseUsPoints.map((point, index) => (
-              <div key={index} className="flex items-center text-left">
-                <CheckCircle2 className="h-6 w-6 text-green-400 mr-4 flex-shrink-0" />
-                <span className="text-white text-lg">{point}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
-
-export default About;
-</file>
-
-<file path="public/send_email_global.php">
-<?php
-// Set headers to return JSON and allow cross-origin requests
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type");
-header('Content-Type: application/json');
-
-// Only process POST requests
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // --- Sanitize and retrieve form data ---
-    $fullName = isset($_POST['fullName']) ? htmlspecialchars(trim($_POST['fullName'])) : '';
-    $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
-    $phone = isset($_POST['phone']) ? htmlspecialchars(trim($_POST['phone'])) : 'Not provided';
-    $messageBody = isset($_POST['message']) ? htmlspecialchars(trim($_POST['message'])) : '';
-
-    // --- Validation ---
-    if (empty($fullName) || empty($email) || empty($messageBody)) {
-        echo json_encode(["status" => "error", "message" => "Please fill in all required fields."]);
-        exit;
-    }
-    
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(["status" => "error", "message" => "Invalid email format."]);
-        exit;
-    }
-    
-    // --- Email Configuration ---
-    $to = "zemaydar@gmail.com";
-    $subject = "New Contact Form Submission from: " . $fullName;
-    
-    // Construct the email message
-    $email_content = "You have received a new message from your website contact form.\n\n"
-                   . "===========================================\n"
-                   . "SENDER DETAILS\n"
-                   . "===========================================\n"
-                   . "Full Name: {$fullName}\n"
-                   . "Email: {$email}\n"
-                   . "Phone Number: {$phone}\n\n"
-                   
-                   . "========================================\n"
-                   . "MESSAGE\n"
-                   . "========================================\n"
-                   . "{$messageBody}\n";
-    
-    // Set email headers
-    $headers = "From: noreply@zemaydar.com\r\n" .
-               "Reply-To: " . $email . "\r\n" .
-               "X-Mailer: PHP/" . phpversion();
-    
-    // --- Send Email ---
-    if (mail($to, $subject, $email_content, $headers)) {
-        // Success response
-        echo json_encode(["status" => "success", "message" => "Thank you for your message! We will get back to you soon."]);
-    } else {
-        // Error response if mail() function fails
-        echo json_encode(["status" => "error", "message" => "Failed to send your message. Please try again later."]);
-    }
-} else {
-    // Handle cases where the request method is not POST
-    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
-}
-?>
-</file>
-
-<file path=".github/workflows/deploy.yml">
-name: 🚀 Deploy Website to Hostinger
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  FTP-Deploy-Job:
-    name: 🎉 Deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v4
-
-      - name: 🏗️ Build project
-        run: |
-          npm install
-          CI=false npm run build
-
-      - name: 📂 Sync files to Hostinger
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          local-dir: ./build/
-          # Upload into Hostinger public_html (FTP root)
-          server-dir: ./
 </file>
 
 </files>

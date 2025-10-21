@@ -1,5 +1,5 @@
 import React from 'react';
-import heroImage from '../../Assets/Home/hero1.jpg'; // Correctly import the image
+ // Correctly import the image
 
 const Hero = () => {
   // const heroImage = `${process.env.REACT_APP_BASE_URL}/Assets/Home/hero.png` // This line is removed
@@ -7,7 +7,7 @@ const Hero = () => {
     <div
       // Changed h-screen to h-[70vh] here
       className="relative h-[75vh] bg-cover bg-center"
-      style={{ backgroundImage: `url(${heroImage})` }} // Use the imported variable
+      // style={{ backgroundImage: `url(${})` }} // Use the imported variable
     >
       <div className="absolute inset-0 bg-black opacity-60"></div>
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
